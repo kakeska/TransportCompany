@@ -1,0 +1,19 @@
+-- liczba dni opoznienia w zakonczonych dostawach
+SELECT 
+    d.delivery_id as id_dostawy,
+    car.carrier_name as nazwa_przewoznika,
+    d.delivery_planned_date as planowana_data_dostawy,
+    d.delivery_date as rzeczywista_data_dostawy,
+    ROUND(
+        CASE
+            WHEN d.delivery_date > d.delivery_planned_date
+                THEN d.delivery_date - d.delivery_planned_date 
+                ELSE 0
+        END
+        ,0) AS liczba_dni_opoznienia
+    FROM carriers car
+    JOIN deliveries d
+    ON car.carrier_id = d.carriers_id
+    WHERE d.status_id = 2
+    GROUP BY d.delivery_id,car.carrier_name,d.delivery_planned_date,d.delivery_date
+    ORDER BY liczba_dni_opoznienia DESC;
